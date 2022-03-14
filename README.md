@@ -5,21 +5,21 @@
 Elimizde bir kitap listesi var. 
 Kitap alanları şöyle;
 ```
-- Kitap ID
+- Kitap authorID
 - Kitap Adı
 - Sayfa Sayısı
 - Stok Sayısı
 - Fiyatı
 - Stock Kodu
 - ISBN
-- Yazar bilgisi (ID ve İsim)
+- Yazar bilgisi (authorID ve İsim)
 ```
 
 1. Tüm kitapları listele (list)
 2. Verilen girdi hangi kitap isimlerinde geçiyorsa o kitapları listele (search)
-3. ID'ye göre kitabı yazdır
-4. IDsi verilen kitabı sil. (Silinen kitabın ID'ye göre geliyor olması gerekiyor.)
-5. IDsi verilen kitabı istenilen adet kadar satın al ve kitabın son bilgilerini ekrana yazdır.
+3. authorID'ye göre kitabı yazdır
+4. authorIDsi verilen kitabı sil. (Silinen kitabın authorID'ye göre geliyor olması gerekiyor.)
+5. authorIDsi verilen kitabı istenilen adet kadar satın al ve kitabın son bilgilerini ekrana yazdır.
 
 Yanlış komut girildiğinde ekrana usage'ı yazdıracak. 
 
@@ -39,19 +39,19 @@ go run main.go search Lord of the Ring: The Return of the King
 
 ### get command
 ```
-go run main.go get <bookID>
+go run main.go get <bookauthorID>
 go run main.go get 5
 ```
 
 ### delete command
 ```
-go run main.go delete <bookID>
+go run main.go delete <bookauthorID>
 go run main.go delete 5
 ```
 
 ### buy command
 ```
-go run main.go buy <bookID> <quantity>
+go run main.go buy <bookauthorID> <quantity>
 go run main.go buy 5 2
 ```
 
