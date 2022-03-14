@@ -48,11 +48,12 @@ type book struct {
 	author
 }
 
-//convert book params to string to print 
+//convert book params to string to print
 func (v book) ToString() string {
 
 	return "name: " + v.bookName + " id: " + v.id + " stockCount: " + fmt.Sprint(v.stockCount) + " stockCode: " + fmt.Sprint(v.stockCode) + " price: " + fmt.Sprint(v.price) + "₺"
 }
+
 // check is bookname contains searchText
 func (b book) isNameContains(searchText string) bool {
 	//contains  is caseSensitive
@@ -92,16 +93,22 @@ func main() {
 
 //buy book from liblary if there is enought book in stock
 func buyHandler(bookLiblary []book) {
+	// arg lenght should be 4
 	if len(os.Args) != 4 {
 		printUsageAndExit("invalid query")
 	}
+	// os.Args[0] is not needed, os.Args[1] is command aka "buy"
 	id := os.Args[2]
 	quantity, err := strconv.Atoi(os.Args[3])
 
+	//if its not convert string value to int
+	//example
+	//buy 2 bookName is false
+	//buy 2 3 is correct
 	if err != nil {
 		printUsageAndExit("please type int value as for <quantity> like 'buy <id> <quantity>")
 	}
-
+	//for each book in liblary check is avaiable then check is quantity is okey
 	for _, book := range bookLiblary {
 
 		if book.id == id {
@@ -119,25 +126,26 @@ func buyHandler(bookLiblary []book) {
 			}
 		}
 	}
+	printUsageAndExit("book id is not correct , verify book id is exist")
 }
 
 // delete book by id if exist
 func deleteHandler(bookLiblary []book) {
-	var queryID string
+
 	// check is command correct
 	// must be equal to 3  	delete		 <id>
 	//                		os.Args[2]   [3]
-
 	if len(os.Args) != 3 {
-		printUsageAndExit("unsupported parameters")
-	} else {
-		queryID = os.Args[2]
+		printUsageAndExit("is unsupported command")
 	}
+	//get id of the book
+	queryID := os.Args[2]
 
 	for _, book := range bookLiblary {
 
 		if book.id == queryID {
-			fmt.Println("Removed book information " + book.ToString())
+			//this is dummy delete operation
+			fmt.Println("Book succesuly removed, book information : " + book.ToString())
 			os.Exit(0)
 		}
 	}
@@ -150,7 +158,7 @@ func searchHandler(bookLiblary []book) {
 	if len(os.Args) == 3 {
 		//join array with space
 
-		requestedBook := strings.Join(os.Args[2:], " ")
+		searchText := strings.Join(os.Args[2:], " ")
 
 		//to display not available meesage at the end of the search
 		notAvailableFlag := true
@@ -158,19 +166,19 @@ func searchHandler(bookLiblary []book) {
 		//iterate over array
 		for _, book := range bookLiblary {
 
-			if book.isNameContains(requestedBook) {
+			if book.isNameContains(searchText) {
 				fmt.Println(book.ToString())
 				notAvailableFlag = false
 			}
 		}
 
 		if notAvailableFlag {
-			fmt.Println("The book '" + requestedBook + "' is not available. You can get all book name with 'list' command")
+			fmt.Println("The book '" + searchText + "' is not available. You can get all book name with 'list' command")
 		}
 		os.Exit(0)
 	} else {
 		//looks like its unsupported request
-
+		//go run .\main.go search sasdas asdsa
 		printUsageAndExit("")
 	}
 }
@@ -190,12 +198,11 @@ func getHandler(bookLiblary []book) {
 
 	// must be equal to 3  	delete		 <id>
 	//                		os.Args[2]   [3]
-	var queryID string
+
 	if len(os.Args) != 3 {
 		printUsageAndExit("unsupported parameters")
-	} else {
-		queryID = os.Args[2]
 	}
+	queryID := os.Args[2]
 
 	for _, book := range bookLiblary {
 
