@@ -55,6 +55,12 @@ go run main.go buy <bookauthorID> <quantity>
 go run main.go buy 5 2
 ```
 
+### reset command
+```
+go run main.go reset
+>App Resetted Succesfuly!
+```
+
 ###
 # Requirements:
 - README
