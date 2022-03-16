@@ -80,11 +80,19 @@ func (v Book) ToString() string {
 	return "name: " + v.BookName + " id: " + v.ID + " stockCount: " + fmt.Sprint(v.StockCount) + " stockCode: " + fmt.Sprint(v.StockCode) + " price: " + fmt.Sprint(v.Price) + "₺"
 }
 
+func remove(s []Book, i int) []Book {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
+}
+
 // check is bookname contains searchText
 func (b Book) isNameContains(searchText string) bool {
 	//contains  is caseSensitive
 	return strings.Contains(strings.ToLower(b.BookName), strings.ToLower(searchText))
 }
+
+const JsonLocation = "bookLiblary.json"
+const JsonLocationCopy = "bookLiblary_copy.json"
 
 func main() {
 	//available books , mocked with test data
@@ -110,6 +118,8 @@ func main() {
 	case "buy":
 		buyHandler(bookLiblary)
 
+	case "reset":
+		resetApp()
 	default:
 		printUsageAndExit(firstQuery + " is not supported.")
 
@@ -167,10 +177,13 @@ func deleteHandler(bookLiblary []Book) {
 	//get id of the book
 	queryID := os.Args[2]
 
-	for _, book := range bookLiblary {
+	for i, book := range bookLiblary {
 
 		if book.ID == queryID {
-			//this is dummy delete operation
+			//delete book from books
+
+			storeUpdatedBooks(remove(bookLiblary, i))
+			//
 			fmt.Println("Book succesuly removed, book information : " + book.ToString())
 			os.Exit(0)
 		}
@@ -252,7 +265,7 @@ func printUsageAndExit(optionalText string) {
 // Get books from source , currenlty its just return dummy values
 func getBooks() []Book {
 	//read our data from dumy json file
-	dat, err := os.ReadFile("bookLiblary.json")
+	dat, err := os.ReadFile(JsonLocation)
 	if err != nil {
 		// check json file :)
 		printUsageAndExit("Unable read source json file")
@@ -270,4 +283,30 @@ func getBooks() []Book {
 	}
 	return books
 
+}
+
+//its just save the books to file to make changes persist
+func storeUpdatedBooks(booksToStore Books) {
+	//convert to JSON
+	bytes, err := booksToStore.Marshal()
+	if err != nil {
+		printUsageAndExit("Unable convert ")
+	}
+	//store it
+	os.WriteFile(JsonLocation, bytes, 0644)
+
+}
+
+//simple method to reset app
+//some operations is changes our bookLiblary.json . We use this method to restored it to original
+func resetApp() {
+	dat, err := os.ReadFile(JsonLocationCopy)
+	if err != nil {
+		// check json file :)
+		printUsageAndExit("Unable read source json file")
+	}
+
+	os.WriteFile(JsonLocation, []byte(dat), 0644)
+	fmt.Println("App Resetted Succesfuly!")
+	os.Exit(0)
 }
