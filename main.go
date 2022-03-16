@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
@@ -31,33 +32,63 @@ Commads:
 	go run main.go buy <bookID> <quantity>
 	go run main.go buy 5 2
 `
+//Changed to JSON
+// type Author struct {
+// 	AuthorID string `json:"authorID"`
+// 	Name     string `json:"name"`
+// }
 
-type author struct {
-	AuthorID string
-	name     string
+// type Book struct {
+// 	ID            string 
+// 	BookName      string
+// 	NumberOfPages int
+// 	StockCount    int
+// 	Price         int
+// 	ISBN          string
+// 	StockCode     string
+// 	Author        Author `json:"author"`
+// }
+type Books []Book
+
+func UnmarshalBooks(data []byte) (Books, error) {
+	var r Books
+	err := json.Unmarshal(data, &r)
+	return r, err
 }
 
-type book struct {
-	id            string
-	bookName      string
-	numberOfPages int
-	stockCount    int
-	price         int
-	ISBN          string
-	stockCode     string
-	author
+func (r *Books) Marshal() ([]byte, error) {
+	return json.Marshal(r)
 }
+
+type Book struct {
+	ID            string `json:"ID"`           
+	BookName      string `json:"BookName"`     
+	NumberOfPages int  `json:"NumberOfPages"`
+	StockCount    int  `json:"StockCount"`   
+	Price         int  `json:"Price"`        
+	ISBN          string `json:"ISBN"`         
+	StockCode     string `json:"StockCode"`    
+	Author        Author `json:"Author"`       
+}
+
+type Author struct {
+	AuthorID string `json:"AuthorID"`
+	Name     string `json:"Name"`    
+}
+
+
+
 
 //convert book params to string to print
-func (v book) ToString() string {
+func (v Book) ToString() string {
 
-	return "name: " + v.bookName + " id: " + v.id + " stockCount: " + fmt.Sprint(v.stockCount) + " stockCode: " + fmt.Sprint(v.stockCode) + " price: " + fmt.Sprint(v.price) + "₺"
+	return "name: " + v.BookName + " id: " + v.ID + " stockCount: " + fmt.Sprint(v.StockCount) + " stockCode: " + fmt.Sprint(v.StockCode) + " price: " + fmt.Sprint(v.Price) + "₺"
 }
 
 // check is bookname contains searchText
-func (b book) isNameContains(searchText string) bool {
+func (b Book) isNameContains(searchText string) bool {
 	//contains  is caseSensitive
-	return strings.Contains(strings.ToLower(b.bookName), strings.ToLower(searchText))
+	return strings.Contains(strings.ToLower(b.BookName), strings.ToLower(searchText))
 }
 
 func main() {
@@ -92,7 +123,7 @@ func main() {
 }
 
 //buy book from liblary if there is enought book in stock
-func buyHandler(bookLiblary []book) {
+func buyHandler(bookLiblary []Book) {
 	// arg lenght should be 4
 	if len(os.Args) != 4 {
 		printUsageAndExit("invalid query")
@@ -111,10 +142,10 @@ func buyHandler(bookLiblary []book) {
 	//for each book in liblary check is avaiable then check is quantity is okey
 	for _, book := range bookLiblary {
 
-		if book.id == id {
+		if book.ID == id {
 
-			if book.stockCount >= quantity {
-				book.stockCount = book.stockCount - quantity
+			if book.StockCount >= quantity {
+				book.StockCount = book.StockCount - quantity
 				fmt.Println("Great you succesfuly ordered !")
 				book.ToString()
 				fmt.Println(book.ToString())
@@ -130,7 +161,7 @@ func buyHandler(bookLiblary []book) {
 }
 
 // delete book by id if exist
-func deleteHandler(bookLiblary []book) {
+func deleteHandler(bookLiblary []Book) {
 
 	// check is command correct
 	// must be equal to 3  	delete		 <id>
@@ -143,7 +174,7 @@ func deleteHandler(bookLiblary []book) {
 
 	for _, book := range bookLiblary {
 
-		if book.id == queryID {
+		if book.ID == queryID {
 			//this is dummy delete operation
 			fmt.Println("Book succesuly removed, book information : " + book.ToString())
 			os.Exit(0)
@@ -153,7 +184,7 @@ func deleteHandler(bookLiblary []book) {
 }
 
 //search by word
-func searchHandler(bookLiblary []book) {
+func searchHandler(bookLiblary []Book) {
 	// [1] = app tep location , [2] = query , [2:] book name
 	if len(os.Args) == 3 {
 		//join array with space
@@ -184,7 +215,7 @@ func searchHandler(bookLiblary []book) {
 }
 
 //print all books
-func listHandler(bookLiblary []book) {
+func listHandler(bookLiblary []Book) {
 	//just print all of the books
 	for _, b := range bookLiblary {
 		fmt.Println(b.ToString())
@@ -194,7 +225,7 @@ func listHandler(bookLiblary []book) {
 }
 
 //get book by id
-func getHandler(bookLiblary []book) {
+func getHandler(bookLiblary []Book) {
 
 	// must be equal to 3  	delete		 <id>
 	//                		os.Args[2]   [3]
@@ -206,7 +237,7 @@ func getHandler(bookLiblary []book) {
 
 	for _, book := range bookLiblary {
 
-		if book.id == queryID {
+		if book.ID == queryID {
 			fmt.Println(book.ToString())
 			os.Exit(0)
 		}
@@ -224,14 +255,14 @@ func printUsageAndExit(optionalText string) {
 }
 
 // Get books from source , currenlty its just return dummy values
-func getBooks() []book {
+func getBooks() []Book {
 
-	return []book{
-		{id: "0", bookName: "The Lord of the Rings: The Return of the King", numberOfPages: 355, stockCount: 1, stockCode: "123456", price: 50, ISBN: "ISBN1", author: author{AuthorID: "0", name: "J.R.R. Tolkien"}},
-		{id: "1", bookName: "Hobbit", numberOfPages: 665, stockCount: 14, stockCode: "23456", price: 41, ISBN: "ISBN523", author: author{AuthorID: "0", name: "J.R.R. Tolkien"}},
-		{id: "2", bookName: "The Unix Programming Environment", numberOfPages: 375, stockCount: 55, stockCode: "3456", price: 11, ISBN: "ISBN1", author: author{AuthorID: "1", name: "Rob Pike"}},
-		{id: "3", bookName: "Beyaz Diş", numberOfPages: 285, stockCount: 3, stockCode: "456", price: 5, ISBN: "ISBN523", author: author{AuthorID: "2", name: "Jack London"}},
-		{id: "4", bookName: "Palto", numberOfPages: 474, stockCount: 10, stockCode: "56", price: 10, ISBN: "ISBN51615", author: author{AuthorID: "3", name: "Vasilyeviç Gogol"}},
-		{id: "5", bookName: "The Lord of The Rings: The Fellowship of the Ring", numberOfPages: 1558, stockCount: 32, stockCode: "65432", price: 24, ISBN: "ISBN5162615", author: author{AuthorID: "0", name: "J.R.R. Tolkien"}},
+	return []Book{
+		{ID: "0", BookName: "The Lord of the Rings: The Return of the King", NumberOfPages: 355, StockCount: 1, StockCode: "123456", Price: 50, ISBN: "ISBN1", Author: Author{AuthorID: "0", Name: "J.R.R. Tolkien"}},
+		{ID: "1", BookName: "Hobbit", NumberOfPages: 665, StockCount: 14, StockCode: "23456", Price: 41, ISBN: "ISBN523", Author: Author{AuthorID: "0", Name: "J.R.R. Tolkien"}},
+		{ID: "2", BookName: "The Unix Programming Environment", NumberOfPages: 375, StockCount: 55, StockCode: "3456", Price: 11, ISBN: "ISBN1", Author: Author{AuthorID: "1", Name: "Rob Pike"}},
+		{ID: "3", BookName: "Beyaz Diş", NumberOfPages: 285, StockCount: 3, StockCode: "456", Price: 5, ISBN: "ISBN523", Author: Author{AuthorID: "2", Name: "Jack London"}},
+		{ID: "4", BookName: "Palto", NumberOfPages: 474, StockCount: 10, StockCode: "56", Price: 10, ISBN: "ISBN51615", Author: Author{AuthorID: "3", Name: "Vasilyeviç Gogol"}},
+		{ID: "5", BookName: "The Lord of The Rings: The Fellowship of the Ring", NumberOfPages: 1558, StockCount: 32, StockCode: "65432", Price: 24, ISBN: "ISBN5162615", Author: Author{AuthorID: "0", Name: "J.R.R. Tolkien"}},
 	}
 }

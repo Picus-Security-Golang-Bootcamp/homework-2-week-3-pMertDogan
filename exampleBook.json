@@ -1,0 +1,12 @@
+{
+    "ID": "1",
+    "BookName": "Hobbit",
+    "NumberOfPages": 665,
+    "Price": 41,
+    "ISBN": "ISBN523",
+    "StockCode": "23456",
+    "author": {
+        "authorID": "0",
+        "name": "J.R.R. Tolkien"
+    }
+}
