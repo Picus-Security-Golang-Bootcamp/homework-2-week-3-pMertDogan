@@ -32,52 +32,47 @@ Commads:
 	go run main.go buy <bookID> <quantity>
 	go run main.go buy 5 2
 `
-//Changed to JSON
-// type Author struct {
-// 	AuthorID string `json:"authorID"`
-// 	Name     string `json:"name"`
-// }
 
-// type Book struct {
-// 	ID            string 
-// 	BookName      string
-// 	NumberOfPages int
-// 	StockCount    int
-// 	Price         int
-// 	ISBN          string
-// 	StockCode     string
-// 	Author        Author `json:"author"`
-// }
+// lazy :)
+// to get json output to use it quicktype
+// https://go.dev/play/p/hfMRFkXU4PV
+
+// This file was generated from JSON Schema using quicktype, do not modify it directly.
+// To parse and unparse this JSON data, add this code to your project and do:
+//
+//    books, err := UnmarshalBooks(bytes)
+//    bytes, err = books.Marshal()
+
+//define books
 type Books []Book
 
+//aka fromJson
 func UnmarshalBooks(data []byte) (Books, error) {
 	var r Books
 	err := json.Unmarshal(data, &r)
 	return r, err
 }
 
+//aka toJson
 func (r *Books) Marshal() ([]byte, error) {
 	return json.Marshal(r)
 }
 
 type Book struct {
-	ID            string `json:"ID"`           
-	BookName      string `json:"BookName"`     
-	NumberOfPages int  `json:"NumberOfPages"`
-	StockCount    int  `json:"StockCount"`   
-	Price         int  `json:"Price"`        
-	ISBN          string `json:"ISBN"`         
-	StockCode     string `json:"StockCode"`    
-	Author        Author `json:"Author"`       
+	ID            string `json:"ID"`
+	BookName      string `json:"BookName"`
+	NumberOfPages int    `json:"NumberOfPages"`
+	StockCount    int    `json:"StockCount"`
+	Price         int    `json:"Price"`
+	ISBN          string `json:"ISBN"`
+	StockCode     string `json:"StockCode"`
+	Author        Author `json:"Author"`
 }
 
 type Author struct {
 	AuthorID string `json:"AuthorID"`
-	Name     string `json:"Name"`    
+	Name     string `json:"Name"`
 }
-
-
-
 
 //convert book params to string to print
 func (v Book) ToString() string {
@@ -256,13 +251,23 @@ func printUsageAndExit(optionalText string) {
 
 // Get books from source , currenlty its just return dummy values
 func getBooks() []Book {
-
-	return []Book{
-		{ID: "0", BookName: "The Lord of the Rings: The Return of the King", NumberOfPages: 355, StockCount: 1, StockCode: "123456", Price: 50, ISBN: "ISBN1", Author: Author{AuthorID: "0", Name: "J.R.R. Tolkien"}},
-		{ID: "1", BookName: "Hobbit", NumberOfPages: 665, StockCount: 14, StockCode: "23456", Price: 41, ISBN: "ISBN523", Author: Author{AuthorID: "0", Name: "J.R.R. Tolkien"}},
-		{ID: "2", BookName: "The Unix Programming Environment", NumberOfPages: 375, StockCount: 55, StockCode: "3456", Price: 11, ISBN: "ISBN1", Author: Author{AuthorID: "1", Name: "Rob Pike"}},
-		{ID: "3", BookName: "Beyaz Diş", NumberOfPages: 285, StockCount: 3, StockCode: "456", Price: 5, ISBN: "ISBN523", Author: Author{AuthorID: "2", Name: "Jack London"}},
-		{ID: "4", BookName: "Palto", NumberOfPages: 474, StockCount: 10, StockCode: "56", Price: 10, ISBN: "ISBN51615", Author: Author{AuthorID: "3", Name: "Vasilyeviç Gogol"}},
-		{ID: "5", BookName: "The Lord of The Rings: The Fellowship of the Ring", NumberOfPages: 1558, StockCount: 32, StockCode: "65432", Price: 24, ISBN: "ISBN5162615", Author: Author{AuthorID: "0", Name: "J.R.R. Tolkien"}},
+	//read our data from dumy json file
+	dat, err := os.ReadFile("bookLiblary.json")
+	if err != nil {
+		// check json file :)
+		printUsageAndExit("Unable read source json file")
 	}
+
+	//    books, err := UnmarshalBooks(bytes)
+	//    bytes, err = books.Marshal()
+	//convert json to to books
+	books, err := UnmarshalBooks(dat)
+
+	if err != nil {
+		fmt.Print(string(dat))
+
+		printUsageAndExit("Unable convert readed bytes to books")
+	}
+	return books
+
 }
