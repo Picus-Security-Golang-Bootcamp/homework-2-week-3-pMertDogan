@@ -145,15 +145,18 @@ func buyHandler(bookLiblary []Book) {
 		printUsageAndExit("please type int value as for <quantity> like 'buy <id> <quantity>")
 	}
 	//for each book in liblary check is avaiable then check is quantity is okey
-	for _, book := range bookLiblary {
+	for i, book := range bookLiblary {
 
 		if book.ID == id {
 
 			if book.StockCount >= quantity {
 				book.StockCount = book.StockCount - quantity
 				fmt.Println("Great you succesfuly ordered !")
-				book.ToString()
 				fmt.Println(book.ToString())
+				//change current lib
+				bookLiblary[i] = book
+				//store updated one
+				storeUpdatedBooks(bookLiblary)
 				os.Exit(0)
 			} else {
 				book.ToString()
@@ -297,8 +300,8 @@ func storeUpdatedBooks(booksToStore Books) {
 
 }
 
-//simple method to reset app
-//some operations is changes our bookLiblary.json . We use this method to restored it to original
+//simple method to reset app.
+//Some operations is changes our bookLiblary.json . We use this method to restored it to original
 func resetApp() {
 	dat, err := os.ReadFile(JsonLocationCopy)
 	if err != nil {
