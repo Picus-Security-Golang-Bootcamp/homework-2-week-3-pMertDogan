@@ -1,3 +1,7 @@
+WaitGroups hakkında blogumdan bir makale
+https://droidim.com/blog/2022/03/18/waitgroups-ve-go/
+
+
 ## Homework | Week 3
 `Not: Ödevi yeni bir repoya ekleyeceksiniz. Var olan reponuzda bir güncelleme olmayacak. "homework-2..." şeklinde yeni bir repo üzerinde çalışacaksınız.`
 

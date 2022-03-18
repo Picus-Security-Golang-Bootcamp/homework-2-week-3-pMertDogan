@@ -31,6 +31,9 @@ Commads:
 	-buy command
 	go run main.go buy <bookID> <quantity>
 	go run main.go buy 5 2
+	
+	-reset command
+	go run main.go reset
 `
 
 // lazy :)
